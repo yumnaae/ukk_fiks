@@ -3,16 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SiswaResource\Pages;
-use App\Filament\Resources\SiswaResource\RelationManagers;
 use App\Models\Siswa;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection;
 
 class SiswaResource extends Resource
 {
@@ -98,10 +96,16 @@ class SiswaResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
-            ->bulkActions([
+            ->bulkActions([                    
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->action(function (Collection $records) {
+                            // filter siswa yang tidak ada pkls
+                            $deletable = $records->filter(fn ($siswa) => $siswa->pkls()->count() == 0);
+            
+                            $deletable->each->delete();
+                        }),
+                ]),            
             ]);
     }
 

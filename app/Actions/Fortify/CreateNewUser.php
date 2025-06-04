@@ -35,12 +35,14 @@ class CreateNewUser implements CreatesNewUsers
             ]);
         }
 
-        // membuat user baru dengan role null
-        return User::create([
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
-            'role' => null,  // Role masih null, admin nanti yang akan set role
         ]);
+        
+        $user->assignRole('siswa');
+        
+        return $user;
     }
 }
