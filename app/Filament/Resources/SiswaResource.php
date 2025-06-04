@@ -78,8 +78,8 @@ class SiswaResource extends Resource
                     ->boolean(),
                 Tables\Columns\ImageColumn::make('foto')
                     ->label('Foto')
-                    ->disk('public')
-                    ->circular(),
+                    ->getStateUsing(fn ($record) => $record->foto ? asset('storage/' . $record->foto) : null)
+                    ->circular(),                          
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
